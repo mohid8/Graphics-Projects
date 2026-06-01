@@ -1,0 +1,41 @@
+{
+    "folders": [
+        {
+            "name": "Global Workspace",
+            "path": "."
+        },
+        {
+            "name": "Math Core",
+            "path": "Core"
+        },
+        {
+            "name": "CPU Rasterizer",
+            "path": "CPURasterizer"
+        },
+        {
+            "name": "CPU Path Tracer",
+            "path": "CPUPathTracer"
+        },
+        {
+            "name": "GPU Engine",
+            "path": "Engine"
+        },
+        {
+            "name": "Third Party Tools",
+            "path": "ThirdParty"
+        }
+    ],
+    "settings": {
+        "cmake.sourceDirectory": "${workspaceRoot}",
+        "cmake.buildDirectory": "${workspaceRoot}/build",
+        "C_Cpp.default.cppStandard": "c++20",
+        "C_Cpp.default.cStandard": "c17",
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "files.trimTrailingWhitespace": true,
+        "files.associations": {
+            "cmath": "cpp",
+            "algorithm": "cpp"
+        }
+    }
+}

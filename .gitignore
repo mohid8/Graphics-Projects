@@ -1,0 +1,23 @@
+# Prerequisites / Build outputs
+build/
+.cache/
+bin/
+obj/
+
+# Visual Studio Code specific
+.vscode/
+
+# Package managers
+vcpkg_installed/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Graphics / Executable dumps
+*.exe
+*.pdb
+*.ilk
+*.ppm
+*.bmp
+*.png
