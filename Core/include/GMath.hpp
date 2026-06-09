@@ -508,12 +508,18 @@ namespace GMath
         ) * invDet;
     }
 
+    inline Mat4 inverseAffine(const Mat4& m)
+    {
+        /*TODO: Complete this*/
+        return Mat4();
+    }
+
     inline Mat4 makeTranslation(float tx, float ty, float tz)
     {
         return Mat4(
-            0.0f, 0.0f, 0.0f, tx,
-            0.0f, 0.0f, 0.0f, ty,
-            0.0f, 0.0f, 0.0f, tz,
+            1.0f, 0.0f, 0.0f, tx,
+            0.0f, 1.0f, 0.0f, ty,
+            0.0f, 0.0f, 1.0f, tz,
             0.0f, 0.0f, 0.0f, 1.0f
         );
     }
@@ -564,6 +570,40 @@ namespace GMath
             s,     c,   0.0f, 0.0f,
             0.0f, 0.0f, 1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f
+        );
+    }
+
+    inline Mat4 makeLookAt(const Vec3& cameraPos, const Vec3& targetPos, const Vec3& upDir)
+    {
+        Vec3 v = normalize(cameraPos - targetPos);
+        Vec3 r = -1 * normalize(cross(v, upDir));
+        Vec3 u = cross(v,r);
+        return Mat4(
+            r.x,  r.y,  r.z,  -dot(cameraPos, r),
+            u.x,  u.y,  u.z,  -dot(cameraPos, u),
+            v.x,  v.y,  v.z,  -dot(cameraPos, v),
+            0.0f, 0.0f, 0.0f, 1.0f
+        );
+    }
+
+    inline Mat4 makeOrthProj(float l, float r, float b, float t, float n, float f)
+    {
+        return Mat4(
+            2/(r-l),    0.0f,         0.0f,       -((r+l)/(r-l)),
+            0.0f,       2/(t-b),      0.0f,       -((t+b)/(t-b)),
+            0.0f,       0.0f,         -2/(f-n),   -((f+n)/(f-n)),
+            0.0f,       0.0f,         0.0f,        1.0f
+        );
+    }
+
+    inline Mat4 makePerspProj(float vertFOV, float aspRatio, float n, float f)
+    {
+        float c = 1.0/std::tan(vertFOV/2.0);
+        return Mat4(
+            c/aspRatio,    0.0f,         0.0f,            0.0f,
+            0.0f,          c,            0.0f,            0.0f,
+            0.0f,          0.0f,   -(f+n)/(f-n),   -2*(f*n)/(f-n),
+            0.0f,          0.0f,        -1.0f,            0.0f
         );
     }
 }
