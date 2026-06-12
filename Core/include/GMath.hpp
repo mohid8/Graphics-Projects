@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cassert>
+#include <stdint.h>
 
 namespace GMath
 {
@@ -66,10 +67,6 @@ namespace GMath
             return *this;
         }
 
-        Vec4 asVec4(float w) const
-        {
-            return Vec4(x,y,z,w);
-        }
     };
 
     struct Vec4
@@ -83,6 +80,7 @@ namespace GMath
 
         Vec4(): x(0.0f), y(0.0f), z(0.0f), w(0.0f){}
         Vec4(float _x, float _y, float _z, float _w): x(_x), y(_y), z(_z), w(_w){}
+        Vec4(const Vec3& v, float _w): x(v.x), y(v.y), z(v.z), w(_w){};
 
         Vec4& operator+=(const Vec4& other)
         {
@@ -598,7 +596,7 @@ namespace GMath
 
     inline Mat4 makePerspProj(float vertFOV, float aspRatio, float n, float f)
     {
-        float c = 1.0/std::tan(vertFOV/2.0);
+        float c = 1.0f/std::tan(vertFOV/2.0f);
         return Mat4(
             c/aspRatio,    0.0f,         0.0f,            0.0f,
             0.0f,          c,            0.0f,            0.0f,
