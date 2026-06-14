@@ -2,13 +2,14 @@
 #include <iostream>
 #include "Rasterizer.h"
 
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 1000;
+const int WINDOW_WIDTH = 600;
+const int WINDOW_HEIGHT = 600;
 
 const int RENDER_WIDTH = 100;
 const int RENDER_HEIGHT = 100;
 
-int main() {
+int main() 
+{
     if (!glfwInit()) 
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -24,8 +25,7 @@ int main() {
 
     Rasterizer renderer(RENDER_WIDTH, RENDER_HEIGHT);
     renderer.fillColor(0xFFFFFFFF);
-    renderer.drawPixel(10,50, 0xFFFF0000);
-    renderer.drawPixel(RENDER_WIDTH-10,RENDER_HEIGHT-10, 0xFFFF0000);
+    renderer.drawLine(50,50,80,80,0xFFFF0000);
 
     float scaleX = (float)WINDOW_WIDTH / RENDER_WIDTH;
     float scaleY = (float)WINDOW_HEIGHT / RENDER_HEIGHT;
