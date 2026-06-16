@@ -85,17 +85,28 @@ void Rasterizer::drawLine(float x0, float y0, float x1, float y1, uint32_t color
 }
 
 void Rasterizer::drawTriangle(
-    float x0, float y0, 
-    float x1, float y1, 
-    float x2, float y2, 
-    uint32_t color
+    const GMath::Vertex& v0, 
+    const GMath::Vertex& v1, 
+    const GMath::Vertex& v2
 )
 {
+    float x0 = v0.pos.x;
+    float x1 = v1.pos.x;
+    float x2 = v2.pos.x;
+
+    float y0 = v0.pos.y;
+    float y1 = v1.pos.y;
+    float y2 = v2.pos.y;
+
     int minX = static_cast<int>(std::floor(std::min({x0, x1, x2})));    
     int maxX = static_cast<int>(std::ceil(std::max({x0, x1, x2})));
 
     int minY = static_cast<int>(std::floor(std::min({y0, y1, y2})));
     int maxY = static_cast<int>(std::ceil(std::max({y0, y1, y2})));
+
+    float fAlpha = (x2-x1)*y0 - (y2-y1)*x0 + x1*y2 - x2*y1;
+    float fBeta  = (x0-x2)*y1 - (y0-y2)*x1 + x2*y0 - x0*y2;
+    float fGamma = (x1-x0)*y2 - (y1-y0)*x2 + x0*y1 - x1*y0;
 
     for(int y = minY; y <= maxY; y++)
     {
@@ -104,12 +115,21 @@ void Rasterizer::drawTriangle(
             float px = x + 0.5f;
             float py = y + 0.5f;
 
-            float alpha = ((x2-x1)*py - (y2-y1)*px + x1*y2 - x2*y1) / ((x2-x1)*y0 - (y2-y1)*x0 + x1*y2 - x2*y1);
-            float beta =  ((x0-x2)*py - (y0-y2)*px + x2*y0 - x0*y2) / ((x0-x2)*y1 - (y0-y2)*x1 + x2*y0 - x0*y2);
-            float gamma = ((x1-x0)*py - (y1-y0)*px + x0*y1 - x1*y0) / ((x1-x0)*y2 - (y1-y0)*x2 + x0*y1 - x1*y0);
+            float alpha = ((x2-x1)*py - (y2-y1)*px + x1*y2 - x2*y1) / fAlpha;
+            float beta =  ((x0-x2)*py - (y0-y2)*px + x2*y0 - x0*y2) / fBeta;
+            float gamma = ((x1-x0)*py - (y1-y0)*px + x0*y1 - x1*y0) / fGamma;
             
             if(alpha > 0 && beta > 0 && gamma > 0)
             {
+                float r = (alpha*v0.color.r + beta*v1.color.r + gamma*v2.color.r);
+                float g = (alpha*v0.color.g + beta*v1.color.g + gamma*v2.color.g);
+                float b = (alpha*v0.color.b + beta*v1.color.b + gamma*v2.color.b);
+                float a = (alpha*v0.color.a + beta*v1.color.a + gamma*v2.color.a);
+
+                uint32_t color = (static_cast<uint32_t>(a * 255.0f) << 24) |
+                                 (static_cast<uint32_t>(b * 255.0f) << 16) |
+                                 (static_cast<uint32_t>(g * 255.0f) << 8 ) |
+                                 (static_cast<uint32_t>(r * 255.0f));
                 Rasterizer::drawPixel(x, y, color);
             }
         }

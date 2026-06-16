@@ -8,6 +8,63 @@
 
 namespace GMath
 {
+    struct Vec2
+    {
+        union
+        {
+            struct{float x, y;};
+            float e[2];
+        };
+
+        Vec2(): x(0.0f), y(0.0f) {}
+        Vec2(float _x, float _y): x(_x), y(_y) {}
+
+        Vec2& operator+=(const Vec2& other)
+        {
+            x += other.x;
+            y += other.y;
+            return *this;
+        }
+
+        Vec2& operator-=(const Vec2& other)
+        {
+            x -= other.x;
+            y -= other.y;
+            return *this;
+        }
+
+        Vec2& operator*=(float t)
+        {
+            x *= t;
+            y *= t;
+            return *this;
+        }
+
+        Vec2& operator/=(float t)
+        {
+            return *this *= 1/t;
+        }
+
+        float length() const
+        {
+            return std::sqrt(lengthSquared());
+        }
+
+        float lengthSquared() const
+        {
+            return x * x + y * y;
+        }
+
+        Vec2& clamp(float min, float max)
+        {
+            x = std::clamp(x, min, max);
+            y = std::clamp(y, min, max);
+            return *this;
+        }
+        
+
+    };
+
     struct Vec3
     {
         union
@@ -65,6 +122,11 @@ namespace GMath
             y = std::clamp(y, min, max);
             z = std::clamp(z, min, max);
             return *this;
+        }
+
+        Vec2 asVec2() const
+        {
+            return Vec2(x,y);
         }
 
     };
@@ -129,6 +191,12 @@ namespace GMath
             return Vec3(x,y,z);
         }
 
+    };
+
+    struct Vertex
+    {
+        Vec4 pos;
+        Vec4 color;
     };
 
     struct Mat4
@@ -196,6 +264,11 @@ namespace GMath
         }
     };
 
+    inline std::ostream& operator<<(std::ostream& out, const Vec2& u)
+    {
+        return out << u.x << ' ' << u.y;
+    }
+
     inline std::ostream& operator<<(std::ostream& out, const Vec3& u)
     {
         return out << u.x << ' ' << u.y << ' ' << u.z;
@@ -213,6 +286,11 @@ namespace GMath
 
     /*TODO: Mat printout*/
 
+    inline Vec2 operator+(const Vec2& u, const Vec2& v)
+    {
+        return Vec2(u.x + v.x, u.y + v.y);
+    }
+
     inline Vec3 operator+(const Vec3& u, const Vec3& v)
     {
         return Vec3(u.x + v.x, u.y + v.y, u.z + v.z);
@@ -226,6 +304,11 @@ namespace GMath
     inline Quat operator+(const Quat& q, const Quat& r)
     {
         return Quat(q.x + r.x, q.y + r.y, q.z + r.z, q.w + r.w);
+    }
+
+    inline Vec2 operator-(const Vec2& u, const Vec2& v)
+    {
+        return Vec2(u.x - v.x, u.y - v.y);
     }
 
     inline Vec3 operator-(const Vec3& u, const Vec3& v)
@@ -243,6 +326,11 @@ namespace GMath
         return Quat(q.x - r.x, q.y - r.y, q.z - r.z, q.w - r.w);
     }
 
+    inline Vec2 operator-(const Vec2& u)
+    {
+        return Vec2(u.x * - 1, u.y * -1);
+    }
+
     inline Vec3 operator-(const Vec3& u)
     {
         return Vec3(u.x * - 1, u.y * -1, u.z * -1);
@@ -256,6 +344,11 @@ namespace GMath
     inline Quat operator-(const Quat& q)
     {
         return Quat(q.x * - 1, q.y * -1, q.z * -1, q.w * -1);
+    }
+
+    inline Vec2 operator*(const Vec2& u, float t)
+    {
+        return Vec2(u.x * t, u.y * t);
     }
 
     inline Vec3 operator*(const Vec3& u, float t)
@@ -283,6 +376,11 @@ namespace GMath
         );
     }
 
+    inline Vec2 operator*(float t, const Vec2& u)
+    {
+        return u * t;
+    }
+
     inline Vec3 operator*(float t, const Vec3& u)
     {
         return u * t;
@@ -303,6 +401,11 @@ namespace GMath
         return m * t;
     }
 
+    inline Vec2 operator/(const Vec2& u, float t)
+    {
+        return u * 1/t;
+    }
+
     inline Vec3 operator/(const Vec3& u, float t)
     {
         return u * 1/t;
@@ -321,6 +424,11 @@ namespace GMath
     inline Mat4 operator/(const Mat4& m, float t)
     {
         return m * 1/t;
+    }
+
+    inline float dot(const Vec2& u, const Vec2& v)
+    {
+        return u.x*v.x + u.y*v.y;
     }
 
     inline float dot(const Vec3& u, const Vec3& v)

@@ -14,10 +14,9 @@ class Rasterizer
     void drawLine(float x0, float y0, float x1, float y1, uint32_t color);
     
     void drawTriangle(
-        float x0, float y0, 
-        float x1, float y1, 
-        float x2, float y2, 
-        uint32_t color
+        const GMath::Vertex& v0, 
+        const GMath::Vertex& v1, 
+        const GMath::Vertex& v2
     );
     
     const uint32_t* getColorBuffer() const{return m_colorBuffer;}
