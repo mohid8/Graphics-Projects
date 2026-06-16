@@ -84,6 +84,38 @@ void Rasterizer::drawLine(float x0, float y0, float x1, float y1, uint32_t color
     );
 }
 
+void Rasterizer::drawTriangle(
+    float x0, float y0, 
+    float x1, float y1, 
+    float x2, float y2, 
+    uint32_t color
+)
+{
+    int minX = static_cast<int>(std::floor(std::min({x0, x1, x2})));    
+    int maxX = static_cast<int>(std::ceil(std::max({x0, x1, x2})));
+
+    int minY = static_cast<int>(std::floor(std::min({y0, y1, y2})));
+    int maxY = static_cast<int>(std::ceil(std::max({y0, y1, y2})));
+
+    for(int y = minY; y <= maxY; y++)
+    {
+        for(int x = minX; x <= maxX; x++)
+        {
+            float px = x + 0.5f;
+            float py = y + 0.5f;
+
+            float alpha = ((x2-x1)*py - (y2-y1)*px + x1*y2 - x2*y1) / ((x2-x1)*y0 - (y2-y1)*x0 + x1*y2 - x2*y1);
+            float beta =  ((x0-x2)*py - (y0-y2)*px + x2*y0 - x0*y2) / ((x0-x2)*y1 - (y0-y2)*x1 + x2*y0 - x0*y2);
+            float gamma = ((x1-x0)*py - (y1-y0)*px + x0*y1 - x1*y0) / ((x1-x0)*y2 - (y1-y0)*x2 + x0*y1 - x1*y0);
+            
+            if(alpha > 0 && beta > 0 && gamma > 0)
+            {
+                Rasterizer::drawPixel(x, y, color);
+            }
+        }
+    }
+}
+
 void Rasterizer::fillColor(uint32_t color)
 {
     std::fill_n(m_colorBuffer, m_totalPixels, color);

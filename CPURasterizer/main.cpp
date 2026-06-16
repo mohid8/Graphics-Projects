@@ -25,7 +25,7 @@ int main()
 
     Rasterizer renderer(RENDER_WIDTH, RENDER_HEIGHT);
     renderer.fillColor(0xFFFFFFFF);
-    renderer.drawLine(50,50,80,80,0xFFFF0000);
+    renderer.drawTriangle(10.f,10.f,80.f,80.f,80.f,10.f, 0xFF0000FF);
 
     float scaleX = (float)WINDOW_WIDTH / RENDER_WIDTH;
     float scaleY = (float)WINDOW_HEIGHT / RENDER_HEIGHT;

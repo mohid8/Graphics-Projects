@@ -13,6 +13,13 @@ class Rasterizer
     void drawLine(int x0, int y0, int x1, int y1, uint32_t color);
     void drawLine(float x0, float y0, float x1, float y1, uint32_t color);
     
+    void drawTriangle(
+        float x0, float y0, 
+        float x1, float y1, 
+        float x2, float y2, 
+        uint32_t color
+    );
+    
     const uint32_t* getColorBuffer() const{return m_colorBuffer;}
 
     private:
