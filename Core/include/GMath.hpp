@@ -186,18 +186,17 @@ namespace GMath
             return x*x + y*y + z*z + w*w;
         }
 
+        Vec2 asVec2() const
+        {
+            return Vec2(x,y);
+        }
+
         Vec3 asVec3() const
         {
             return Vec3(x,y,z);
         }
 
-    };
-
-    struct Vertex
-    {
-        Vec4 pos;
-        Vec4 color;
-    };
+    };    
 
     struct Mat4
     {
@@ -403,27 +402,27 @@ namespace GMath
 
     inline Vec2 operator/(const Vec2& u, float t)
     {
-        return u * 1/t;
+        return u * (1.0f/t);
     }
 
     inline Vec3 operator/(const Vec3& u, float t)
     {
-        return u * 1/t;
+        return u * (1.0f/t);
     }
 
     inline Vec4 operator/(const Vec4& u, float t)
     {
-        return u * 1/t;
+        return u * (1.0f/t);
     }
 
     inline Quat operator/(const Quat& q, float t)
     {
-        return q * 1/t;
+        return q * (1.0f/t);
     }
 
     inline Mat4 operator/(const Mat4& m, float t)
     {
-        return m * 1/t;
+        return m * (1.0f/t);
     }
 
     inline float dot(const Vec2& u, const Vec2& v)

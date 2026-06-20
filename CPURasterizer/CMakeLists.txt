@@ -1,10 +1,12 @@
 add_executable(CPURasterizer 
     main.cpp
     Rasterizer.h
-    Rasterizer.cpp
+    Pipeline.h
+    Rasterizer.cpp    
+    Pipeline.cpp
 )
 
-target_link_libraries(CPURasterizer PRIVATE Core)
+target_link_libraries(CPURasterizer PRIVATE Graphics::core)
 
 target_link_libraries(CPURasterizer PRIVATE
     glfw

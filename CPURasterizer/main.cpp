@@ -2,12 +2,13 @@
 #include <iostream>
 #include "Rasterizer.h"
 #include <intrin.h>
+#include "Pipeline.h"
 
-const int WINDOW_WIDTH = 600;
-const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 1000;
+const int WINDOW_HEIGHT = 1000;
 
-const int RENDER_WIDTH = 100;
-const int RENDER_HEIGHT = 100;
+const int RENDER_WIDTH = 1000;
+const int RENDER_HEIGHT = 1000;
 
 int main() 
 {
@@ -26,47 +27,19 @@ int main()
 
     Rasterizer renderer(RENDER_WIDTH, RENDER_HEIGHT);
     renderer.fillColor(0xFFFFFFFF);
-    GMath::Vertex v0;
-    GMath::Vertex v1;
-    GMath::Vertex v2;
 
-    v0.pos = GMath::Vec4(10,10,0,0);
-    v1.pos = GMath::Vec4(80,80,0,0);
-    v2.pos = GMath::Vec4(80,10,0,0);
-
-    v0.color = GMath::Vec4(1,0,0,1);
-    v1.color = GMath::Vec4(0,1,0,1);
-    v2.color = GMath::Vec4(0,0,1,1);
-
-    uint64_t minNumCycles = 0xFFFFFFFFFFFFFFFF;
-    uint64_t maxNumCycles = 0x0000000000000000;
-    uint64_t avgCycles = 0;
-    int numIter = 1000;
-    for(int i = 0; i<numIter; i++)
-    {
-        _mm_lfence();
-        uint64_t startCycles = __rdtsc();
-        _mm_lfence();
-
-        renderer.drawTriangle(v0, v1, v2);
-
-        _mm_lfence();
-        uint64_t endCycles = __rdtsc();
-        _mm_lfence();
-
-        uint64_t totalCycles = endCycles - startCycles;
-        avgCycles += totalCycles;
-        minNumCycles = std::min(minNumCycles, totalCycles);
-        maxNumCycles = std::max(maxNumCycles, totalCycles);         
-    }
-    avgCycles /= numIter;
-    std::cout << "Num of Function Calls: " << numIter << "\n";
-    std::cout << "Minimum Cycles: " << minNumCycles << "\n";
-    std::cout << "Maximum Cycles: " << maxNumCycles << "\n";
-    std::cout << "Average Cycles: " << avgCycles << "\n";
+    Geometry::Mesh teapot;
+    Geometry::loadMeshFromOBJ("c:/Users/ahmed.mohid/Documents/3D_Graphics/utah_teapot.obj", teapot);
+  
+    Pipeline pipeline(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+    pipeline.setViewMat(GMath::makeLookAt(GMath::Vec3(25.0f,25.0f,25.0f), GMath::Vec3(0.0f, 0.0f, 0.0f), GMath::Vec3(0.0f, 1.0f, 0.0f)));
+    pipeline.setProjMat(GMath::makePerspProj(50.0f, 1.0f, 1.0f, 100.0f));
+    pipeline.renderMesh(teapot,GMath::Mat4());
+    
 
     float scaleX = (float)WINDOW_WIDTH / RENDER_WIDTH;
     float scaleY = (float)WINDOW_HEIGHT / RENDER_HEIGHT;
+    
 
     glfwMakeContextCurrent(window);
     glPixelZoom(scaleX, -scaleY); /*flipping Y-axis since I want to draw top to bottom*/

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(GraphicsProjects CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -14,6 +14,12 @@ add_library(glfw STATIC IMPORTED)
 set_target_properties(glfw PROPERTIES
     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/ThirdParty/GLFW/lib/glfw3.lib"
     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/ThirdParty/GLFW/include"
+)
+
+add_library(tinyobjloader INTERFACE)
+
+target_include_directories(tinyobjloader INTERFACE
+    "${CMAKE_SOURCE_DIR}/ThirdParty/tinyobjloader"
 )
 
 if(MSVC)

@@ -1,5 +1,6 @@
 #pragma once
 #include <GMath.hpp>
+#include <Vertex.hpp>
 
 class Rasterizer
 {
@@ -14,9 +15,9 @@ class Rasterizer
     void drawLine(float x0, float y0, float x1, float y1, uint32_t color);
     
     void drawTriangle(
-        const GMath::Vertex& v0, 
-        const GMath::Vertex& v1, 
-        const GMath::Vertex& v2
+        const Geometry::Vertex& v0, 
+        const Geometry::Vertex& v1, 
+        const Geometry::Vertex& v2
     );
     
     const uint32_t* getColorBuffer() const{return m_colorBuffer;}

@@ -59,8 +59,7 @@ void Rasterizer::drawLine(int x0, int y0, int x1, int y1, uint32_t color)
             y += sy;
             if(d <= 0)
             {                
-                d += 2*dx;
-                
+                d += 2*dx;                
             }
             else
             {
@@ -85,18 +84,13 @@ void Rasterizer::drawLine(float x0, float y0, float x1, float y1, uint32_t color
 }
 
 void Rasterizer::drawTriangle(
-    const GMath::Vertex& v0, 
-    const GMath::Vertex& v1, 
-    const GMath::Vertex& v2
+    const Geometry::Vertex& v0, 
+    const Geometry::Vertex& v1, 
+    const Geometry::Vertex& v2
 )
 {
-    float x0 = v0.pos.x;
-    float x1 = v1.pos.x;
-    float x2 = v2.pos.x;
-
-    float y0 = v0.pos.y;
-    float y1 = v1.pos.y;
-    float y2 = v2.pos.y;
+    float x0 = v0.pos.x; float x1 = v1.pos.x; float x2 = v2.pos.x;
+    float y0 = v0.pos.y; float y1 = v1.pos.y; float y2 = v2.pos.y;
 
     int minX = static_cast<int>(std::floor(std::min({x0, x1, x2})));    
     int maxX = static_cast<int>(std::ceil(std::max({x0, x1, x2})));
@@ -104,35 +98,74 @@ void Rasterizer::drawTriangle(
     int minY = static_cast<int>(std::floor(std::min({y0, y1, y2})));
     int maxY = static_cast<int>(std::ceil(std::max({y0, y1, y2})));
 
-    float fAlpha = (x2-x1)*y0 - (y2-y1)*x0 + x1*y2 - x2*y1;
-    float fBeta  = (x0-x2)*y1 - (y0-y2)*x1 + x2*y0 - x0*y2;
-    float fGamma = (x1-x0)*y2 - (y1-y0)*x2 + x0*y1 - x1*y0;
+    float aAlpha = x2-x1; float aBeta = x0-x2; float aGamma = x1-x0;
+    float bAlpha = y2-y1; float bBeta = y0-y2; float bGamma = y1-y0;
+    float cAlpha = x1*y2 - x2*y1; float cBeta = x2*y0 - x0*y2; float cGamma = x0*y1 - x1*y0;  
 
+    float fAlpha = aAlpha*y0 - bAlpha*x0 + cAlpha;
+    float fBeta  = aBeta*y1  - bBeta*x1  + cBeta;
+    float fGamma = aGamma*y2 - bGamma*x2 + cGamma;
+    
+    float aAlphaChange = aAlpha/fAlpha;
+    float bAlphaChange = bAlpha/fAlpha;
+    float cAlphaChange = cAlpha/fAlpha;
+    
+    float aBetaChange = aBeta/fBeta;
+    float bBetaChange = bBeta/fBeta;
+    float cBetaChange = cBeta/fBeta;
+
+    float aGammaChange = aGamma/fGamma;
+    float bGammaChange = bGamma/fGamma;
+    float cGammaChange = cGamma/fGamma;
+
+    float pX = minX + 0.5f;
+    float pY = minY + 0.5f;
+
+    float startAlpha = aAlphaChange*pY - bAlphaChange*pX + cAlphaChange;
+    float startBeta  = aBetaChange*pY  - bBetaChange*pX  + cBetaChange;
+    float startGamma = aGammaChange*pY - bGammaChange*pX + cGammaChange;
+
+    float fAlphaTopLeft = fAlpha * (aAlpha*(-1.0f) - bAlpha*(-2.0f) + cAlpha);
+    float fBetaTopLeft  = fBeta * (aBeta*(-1.0f) - bBeta*(-2.0f) + cBeta);
+    float fGammaTopLeft = fGamma * (aGamma*(-1.0f) - bGamma*(-2.0f) + cGamma);
+
+    bool isAlphaTopLeft = fAlphaTopLeft > 0;
+    bool isBetaTopLeft  = fBetaTopLeft > 0;
+    bool isGammaTopLeft = fGammaTopLeft > 0;
+   
     for(int y = minY; y <= maxY; y++)
     {
+        float alpha = startAlpha;
+        float beta  = startBeta;
+        float gamma = startGamma;
         for(int x = minX; x <= maxX; x++)
-        {
-            float px = x + 0.5f;
-            float py = y + 0.5f;
-
-            float alpha = ((x2-x1)*py - (y2-y1)*px + x1*y2 - x2*y1) / fAlpha;
-            float beta =  ((x0-x2)*py - (y0-y2)*px + x2*y0 - x0*y2) / fBeta;
-            float gamma = ((x1-x0)*py - (y1-y0)*px + x0*y1 - x1*y0) / fGamma;
-            
-            if(alpha > 0 && beta > 0 && gamma > 0)
+        {                     
+            if(alpha >= 0 && beta >= 0 && gamma >= 0)
             {
-                float r = (alpha*v0.color.r + beta*v1.color.r + gamma*v2.color.r);
-                float g = (alpha*v0.color.g + beta*v1.color.g + gamma*v2.color.g);
-                float b = (alpha*v0.color.b + beta*v1.color.b + gamma*v2.color.b);
-                float a = (alpha*v0.color.a + beta*v1.color.a + gamma*v2.color.a);
+                if((alpha > 0 || isAlphaTopLeft) && 
+                   (beta  > 0 || isBetaTopLeft ) &&
+                   (gamma > 0 || isGammaTopLeft)
+                )
+                {
+                    float r = (alpha*v0.color.r + beta*v1.color.r + gamma*v2.color.r);
+                    float g = (alpha*v0.color.g + beta*v1.color.g + gamma*v2.color.g);
+                    float b = (alpha*v0.color.b + beta*v1.color.b + gamma*v2.color.b);
+                    float a = (alpha*v0.color.a + beta*v1.color.a + gamma*v2.color.a);
 
-                uint32_t color = (static_cast<uint32_t>(a * 255.0f) << 24) |
-                                 (static_cast<uint32_t>(b * 255.0f) << 16) |
-                                 (static_cast<uint32_t>(g * 255.0f) << 8 ) |
-                                 (static_cast<uint32_t>(r * 255.0f));
-                Rasterizer::drawPixel(x, y, color);
+                    uint32_t color = (static_cast<uint32_t>(a * 255.0f) << 24) |
+                                     (static_cast<uint32_t>(b * 255.0f) << 16) |
+                                     (static_cast<uint32_t>(g * 255.0f) << 8 ) |
+                                     (static_cast<uint32_t>(r * 255.0f));
+                    Rasterizer::drawPixel(x, y, color);
+                }                
             }
+            alpha -= bAlphaChange;
+            beta  -= bBetaChange;
+            gamma -= bGammaChange;
         }
+        startAlpha += aAlphaChange;
+        startBeta  += aBetaChange;
+        startGamma += aGammaChange;
     }
 }
 
