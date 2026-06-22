@@ -29,7 +29,7 @@ void Pipeline::updateViewPort(int width, int height)
 
     m_viewPortMat = GMath::Mat4(
         w/2.0f, 0.0f  , 0.0f, w/2.0f,
-        0.0f  , h/2.0f, 0.0f, h/2.0f,
+        0.0f  , -h/2.0f, 0.0f, h/2.0f,
         0.0f  , 0.0f  , 1.0f, 0.0f  ,
         0.0f  , 0.0f  , 0.0f, 1.0f
     );
@@ -39,7 +39,7 @@ void Pipeline::renderMesh(const Geometry::Mesh& mesh, const GMath::Mat4& modelMa
 {
     m_transformedVertices.clear();
     m_transformedVertices.reserve(mesh.vertexList.size());
-    
+
     GMath::Mat4 projViewModelMat = m_projViewMat * modelMat;
     uint32_t color = 0xFF00FF00;
     for(Geometry::Vertex v : mesh.vertexList)
