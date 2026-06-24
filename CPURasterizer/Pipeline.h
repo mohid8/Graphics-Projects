@@ -3,6 +3,12 @@
 #include <Mesh.hpp>
 #include "Rasterizer.h"
 
+enum class RenderMode
+{
+    WIREFRAME,
+    SOLID
+};
+
 class Pipeline
 {
     public:
@@ -15,14 +21,18 @@ class Pipeline
 
     void updateViewPort(int width, int height);
 
+    void setRenderMode(RenderMode renderMode);
+
     private:
     int m_width;
     int m_height;
+    RenderMode m_renderMode = RenderMode::WIREFRAME;
 
     Rasterizer& m_rasterizer;
     GMath::Mat4 m_viewMat;
     GMath::Mat4 m_projMat;
     GMath::Mat4 m_projViewMat;
     GMath::Mat4 m_viewPortMat;
-    std::vector<GMath::Vec2> m_transformedVertices;
+    std::vector<Geometry::Vertex> m_transformedVertices;
 };
+

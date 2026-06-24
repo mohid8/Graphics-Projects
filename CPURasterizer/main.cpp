@@ -32,6 +32,7 @@ int main()
     Geometry::loadMeshFromOBJ("c:/Users/ahmed.mohid/Documents/3D_Graphics/utah_teapot.obj", teapot);
   
     Pipeline pipeline(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+    pipeline.setRenderMode(RenderMode::SOLID);
     pipeline.setViewMat(GMath::makeLookAt(GMath::Vec3(10.0f,10.0f,10.0f), GMath::Vec3(0.0f, 0.0f, 0.0f), GMath::Vec3(0.0f, 1.0f, 0.0f)));
     pipeline.setProjMat(GMath::makePerspProj(1.0f, 1.0f, 1.0f, 100.0f));
     //pipeline.setProjMat(GMath::makeOrthProj(-10.0f, 10.0f,-10.0f, 10.0f,1.0f, 100.0f)); 

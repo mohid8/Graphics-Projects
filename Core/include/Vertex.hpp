@@ -8,5 +8,6 @@ namespace Geometry
     {
         GMath::Vec4 pos;
         GMath::Vec4 color;
+        GMath::Vec2 texCoord;
     };
 }

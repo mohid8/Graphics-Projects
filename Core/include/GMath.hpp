@@ -13,6 +13,7 @@ namespace GMath
         union
         {
             struct{float x, y;};
+            struct{float u, v;};
             float e[2];
         };
 

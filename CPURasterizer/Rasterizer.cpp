@@ -125,9 +125,9 @@ void Rasterizer::drawTriangle(
     float startBeta  = aBetaChange*pY  - bBetaChange*pX  + cBetaChange;
     float startGamma = aGammaChange*pY - bGammaChange*pX + cGammaChange;
 
-    float fAlphaTopLeft = fAlpha * (aAlpha*(-1.0f) - bAlpha*(-2.0f) + cAlpha);
-    float fBetaTopLeft  = fBeta * (aBeta*(-1.0f) - bBeta*(-2.0f) + cBeta);
-    float fGammaTopLeft = fGamma * (aGamma*(-1.0f) - bGamma*(-2.0f) + cGamma);
+    float fAlphaTopLeft = fAlpha * (aAlpha*(-1.0f) - bAlpha*(-1.0f) + cAlpha);
+    float fBetaTopLeft  = fBeta * (aBeta*(-1.0f) - bBeta*(-1.0f) + cBeta);
+    float fGammaTopLeft = fGamma * (aGamma*(-1.0f) - bGamma*(-1.0f) + cGamma);
 
     bool isAlphaTopLeft = fAlphaTopLeft > 0;
     bool isBetaTopLeft  = fBetaTopLeft > 0;

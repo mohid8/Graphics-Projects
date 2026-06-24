@@ -6,7 +6,6 @@ m_rasterizer(rasterizer)
     updateViewPort(width, height);
 }
 
-
 void Pipeline::setViewMat(const GMath::Mat4& viewMat)
 {
     m_viewMat = viewMat;
@@ -35,42 +34,56 @@ void Pipeline::updateViewPort(int width, int height)
     );
 }
 
+void Pipeline::setRenderMode(RenderMode renderMode)
+{
+    m_renderMode = renderMode;
+}
+
 void Pipeline::renderMesh(const Geometry::Mesh& mesh, const GMath::Mat4& modelMat)
 {
     m_transformedVertices.clear();
     m_transformedVertices.reserve(mesh.vertexList.size());
 
     GMath::Mat4 projViewModelMat = m_projViewMat * modelMat;
-    uint32_t color = 0xFF00FF00;
+    
     for(Geometry::Vertex v : mesh.vertexList)
     {
         GMath::Vec4 clipSpace = projViewModelMat*v.pos;
         GMath::Vec4 ndc = clipSpace/clipSpace.w;
         GMath::Vec4 screenSpace = m_viewPortMat*ndc;
-        m_transformedVertices.push_back(screenSpace.asVec2());
+        m_transformedVertices.push_back(Geometry::Vertex{screenSpace, v.color, v.texCoord});
     }
 
     for(int i = 0; i < mesh.indexList.size(); i+=3)
     {
-        GMath::Vec2 v0 = m_transformedVertices[mesh.indexList[i]];
-        GMath::Vec2 v1 = m_transformedVertices[mesh.indexList[i+1]];
-        GMath::Vec2 v2 = m_transformedVertices[mesh.indexList[i+2]];
+        Geometry::Vertex v0 = m_transformedVertices[mesh.indexList[i]];
+        Geometry::Vertex v1 = m_transformedVertices[mesh.indexList[i+1]];
+        Geometry::Vertex v2 = m_transformedVertices[mesh.indexList[i+2]];
 
-        m_rasterizer.drawLine(
-            v0.x, v0.y,
-            v1.x, v1.y,
-            color
-        );
-        m_rasterizer.drawLine(
-            v1.x, v1.y,
-            v2.x, v2.y,
-            color
-        );
-        m_rasterizer.drawLine(
-            v2.x, v2.y,
-            v0.x, v0.y,
-            color
-        );
+        if(m_renderMode == RenderMode::WIREFRAME)
+        {
+            uint32_t color = 0xFF00FF00;
+            m_rasterizer.drawLine(
+                v0.pos.x, v0.pos.y,
+                v1.pos.x, v1.pos.y,
+                color
+            );
+            m_rasterizer.drawLine(
+                v1.pos.x, v1.pos.y,
+                v2.pos.x, v2.pos.y,
+                color
+            );
+            m_rasterizer.drawLine(
+                v2.pos.x, v2.pos.y,
+                v0.pos.x, v0.pos.y,
+                color
+            );
+        }
+        else if(m_renderMode == RenderMode::SOLID)
+        {
+            m_rasterizer.drawTriangle(v0, v1, v2);
+        }
+        
     }
 }
 
