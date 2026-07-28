@@ -91,6 +91,10 @@ void Rasterizer::drawTriangle(
 {
     float x0 = v0.pos.x; float x1 = v1.pos.x; float x2 = v2.pos.x;
     float y0 = v0.pos.y; float y1 = v1.pos.y; float y2 = v2.pos.y;
+    float invW0 = v0.pos.w; float invW1 = v1.pos.w; float invW2 = v2.pos.w;
+    float texU0 = v0.texCoord.u; float texU1 = v1.texCoord.u; float texU2 = v2.texCoord.u;
+    float texV0 = v0.texCoord.v; float texV1 = v1.texCoord.v; float texV2 = v2.texCoord.v;
+
 
     int minX = static_cast<int>(std::floor(std::min({x0, x1, x2})));    
     int maxX = static_cast<int>(std::ceil(std::max({x0, x1, x2})));
@@ -147,6 +151,13 @@ void Rasterizer::drawTriangle(
                    (gamma > 0 || isGammaTopLeft)
                 )
                 {
+                    float texUS = alpha*texU0*invW0 + beta*texU1*invW1 + gamma*texU2*invW2;
+                    float texVS = alpha*texV0*invW0 + beta*texV1*invW1 + gamma*texV2*invW2;
+                    float oneS = alpha*invW0 + beta*invW1 + gamma*invW2;
+
+                    float texU = texUS/oneS;
+                    float texV = texVS/oneS;
+
                     float r = (alpha*v0.color.r + beta*v1.color.r + gamma*v2.color.r);
                     float g = (alpha*v0.color.g + beta*v1.color.g + gamma*v2.color.g);
                     float b = (alpha*v0.color.b + beta*v1.color.b + gamma*v2.color.b);

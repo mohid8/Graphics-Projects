@@ -49,8 +49,11 @@ void Pipeline::renderMesh(const Geometry::Mesh& mesh, const GMath::Mat4& modelMa
     for(Geometry::Vertex v : mesh.vertexList)
     {
         GMath::Vec4 clipSpace = projViewModelMat*v.pos;
-        GMath::Vec4 ndc = clipSpace/clipSpace.w;
+
+        float invW = 1.0f / (clipSpace.w);
+        GMath::Vec4 ndc = GMath::Vec4(clipSpace.x*invW, clipSpace.y*invW, clipSpace.z*invW, 1.0f);
         GMath::Vec4 screenSpace = m_viewPortMat*ndc;
+        screenSpace.w = invW; /*Put invW instead of w for efficiency later*/
         m_transformedVertices.push_back(Geometry::Vertex{screenSpace, v.color, v.texCoord});
     }
 

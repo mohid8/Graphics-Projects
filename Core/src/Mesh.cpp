@@ -73,7 +73,7 @@ namespace Geometry
                     outMesh.indexList.push_back(newUniqueIndex);
                     outMesh.vertexList.push_back(v);
 
-                    uniqueVertices[vertexKey] = newUniqueIndex;                    
+                    uniqueVertices[vertexKey] = newUniqueIndex;                 
                 }               
                 
             }
