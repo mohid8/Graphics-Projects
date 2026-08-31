@@ -3,26 +3,6 @@
         {
             "name": "Global Workspace",
             "path": "."
-        },
-        {
-            "name": "Math Core",
-            "path": "Core"
-        },
-        {
-            "name": "CPU Rasterizer",
-            "path": "CPURasterizer"
-        },
-        {
-            "name": "CPU Path Tracer",
-            "path": "CPUPathTracer"
-        },
-        {
-            "name": "GPU Engine",
-            "path": "Engine"
-        },
-        {
-            "name": "Third Party Tools",
-            "path": "ThirdParty"
         }
     ],
     "settings": {
