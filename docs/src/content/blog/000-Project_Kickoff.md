@@ -1,6 +1,6 @@
 ---
 title: "000 - Project Kickoff"
-description: "Project plan and setup"
+description: "Project plan and setup; math library beginnings"
 pubDate: "2026-06-01"
 heroImage: "/src/assets/000_Kickoff.jpg"
 ---

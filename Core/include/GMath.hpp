@@ -132,7 +132,7 @@ namespace GMath
 
     };
 
-    struct Vec4
+    struct alignas(16) Vec4
     {
         union
         {
@@ -199,7 +199,7 @@ namespace GMath
 
     };    
 
-    struct Mat4
+    struct alignas(16) Mat4
     {
         union
         {
@@ -227,7 +227,7 @@ namespace GMath
             return m[column][row];
         }
 
-        const float& operator()(int row, int column) const
+        float operator()(int row, int column) const
         {
             assert(row >= 0 && row < 4 && column >= 0 && column < 4 && "Matrix Index out of bounds!");
             return m[column][row];
@@ -467,37 +467,54 @@ namespace GMath
 
     inline Mat4 operator*(const Mat4& a, const Mat4& b)
     {
-        return Mat4(
-            a(0,0)*b(0,0) + a(0,1)*b(1,0) + a(0,2)*b(2,0) + a(0,3)*b(3,0),
-            a(0,0)*b(0,1) + a(0,1)*b(1,1) + a(0,2)*b(2,1) + a(0,3)*b(3,1),
-            a(0,0)*b(0,2) + a(0,1)*b(1,2) + a(0,2)*b(2,2) + a(0,3)*b(3,2),
-            a(0,0)*b(0,3) + a(0,1)*b(1,3) + a(0,2)*b(2,3) + a(0,3)*b(3,3),
+        Mat4 res;    
+        __m128 temp;
 
-            a(1,0)*b(0,0) + a(1,1)*b(1,0) + a(1,2)*b(2,0) + a(1,3)*b(3,0),
-            a(1,0)*b(0,1) + a(1,1)*b(1,1) + a(1,2)*b(2,1) + a(1,3)*b(3,1),
-            a(1,0)*b(0,2) + a(1,1)*b(1,2) + a(1,2)*b(2,2) + a(1,3)*b(3,2),
-            a(1,0)*b(0,3) + a(1,1)*b(1,3) + a(1,2)*b(2,3) + a(1,3)*b(3,3),
+        __m128 colA0 = _mm_load_ps(&a.e[0]);
+        __m128 colA1 = _mm_load_ps(&a.e[4]);
+        __m128 colA2 = _mm_load_ps(&a.e[8]);
+        __m128 colA3 = _mm_load_ps(&a.e[12]);
+        
+        for(int i = 0; i < 4; i++)
+        {
+            __m128 colB0 = _mm_set1_ps(b(0,i));
+            __m128 colB1 = _mm_set1_ps(b(1,i));
+            __m128 colB2 = _mm_set1_ps(b(2,i));
+            __m128 colB3 = _mm_set1_ps(b(3,i));
 
-            a(2,0)*b(0,0) + a(2,1)*b(1,0) + a(2,2)*b(2,0) + a(2,3)*b(3,0),
-            a(2,0)*b(0,1) + a(2,1)*b(1,1) + a(2,2)*b(2,1) + a(2,3)*b(3,1),
-            a(2,0)*b(0,2) + a(2,1)*b(1,2) + a(2,2)*b(2,2) + a(2,3)*b(3,2),
-            a(2,0)*b(0,3) + a(2,1)*b(1,3) + a(2,2)*b(2,3) + a(2,3)*b(3,3),
+            temp = _mm_mul_ps(colA0, colB0);
+            temp = _mm_add_ps(temp, _mm_mul_ps(colA1, colB1));
+            temp = _mm_add_ps(temp, _mm_mul_ps(colA2, colB2));
+            temp = _mm_add_ps(temp, _mm_mul_ps(colA3, colB3));
 
-            a(3,0)*b(0,0) + a(3,1)*b(1,0) + a(3,2)*b(2,0) + a(3,3)*b(3,0),
-            a(3,0)*b(0,1) + a(3,1)*b(1,1) + a(3,2)*b(2,1) + a(3,3)*b(3,1),
-            a(3,0)*b(0,2) + a(3,1)*b(1,2) + a(3,2)*b(2,2) + a(3,3)*b(3,2),
-            a(3,0)*b(0,3) + a(3,1)*b(1,3) + a(3,2)*b(2,3) + a(3,3)*b(3,3)
-        );
+            _mm_store_ps(&res.e[i*4], temp);        
+        }
+        return res;
     }
 
     inline Vec4 operator*(const Mat4& a, const Vec4& u)
     {
-        return Vec4(
-            a(0,0)*u.x + a(0,1)*u.y + a(0,2)*u.z + a(0,3)*u.w,
-            a(1,0)*u.x + a(1,1)*u.y + a(1,2)*u.z + a(1,3)*u.w,
-            a(2,0)*u.x + a(2,1)*u.y + a(2,2)*u.z + a(2,3)*u.w,
-            a(3,0)*u.x + a(3,1)*u.y + a(3,2)*u.z + a(3,3)*u.w
-        );
+        Vec4 res;
+        __m128 temp;
+        
+        __m128 colA0 = _mm_load_ps(&a.e[0]);
+        __m128 colA1 = _mm_load_ps(&a.e[4]);
+        __m128 colA2 = _mm_load_ps(&a.e[8]);
+        __m128 colA3 = _mm_load_ps(&a.e[12]);
+
+        __m128 colU0 = _mm_set1_ps(u.x);
+        __m128 colU1 = _mm_set1_ps(u.y);
+        __m128 colU2 = _mm_set1_ps(u.z);
+        __m128 colU3 = _mm_set1_ps(u.w);
+
+        temp = _mm_mul_ps(colA0, colU0);
+        temp = _mm_add_ps(temp, _mm_mul_ps(colA1, colU1));
+        temp = _mm_add_ps(temp, _mm_mul_ps(colA2, colU2));
+        temp = _mm_add_ps(temp, _mm_mul_ps(colA3, colU3));
+
+        _mm_store_ps(&res.e[0], temp);
+
+        return res;
     }
 
     inline Quat operator*(const Quat& q, const Quat& r)
